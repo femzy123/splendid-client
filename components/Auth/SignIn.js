@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Form, Input, Button, message, Image } from "antd";
 import { useRouter } from "next/router";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const { Item } = Form;
 
@@ -75,6 +78,7 @@ const SignIn = () => {
             </Button>
           </Item>
         </Form>
+        <p className="text-blue-500 cursor-pointer" onClick={() => router.push("/forgotPassword")}>Forgot email?</p>
         <p className="text-center font-semibold">
           Don&apos;t have an account?{" "}
           <span className="text-blue-500">

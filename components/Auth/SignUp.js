@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   updatePhoneNumber,
+  sendEmailVerification,
 } from "firebase/auth";
 import { db } from "../../config/firebase-config";
 import { collection, addDoc } from "firebase/firestore";
@@ -55,6 +56,7 @@ const SignUp = () => {
                 address,
                 idUrl,
               });
+              sendEmailVerification(auth.currentUser);
               setName("");
               setEmail("");
               setPhone("");
