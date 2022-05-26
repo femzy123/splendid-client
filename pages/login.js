@@ -12,7 +12,6 @@ const Login = () => {
    useEffect(() => {
      auth.onAuthStateChanged(function (user) {
        if (user) {
-         message.info("Already logged in!");
          router.push("/");
        }
      });

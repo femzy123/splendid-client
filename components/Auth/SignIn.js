@@ -22,7 +22,9 @@ const SignIn = () => {
           const user = userCredential.user;
           router.push("/");
         }
-      );
+      ).catch((error) => {
+        message.error("Wrong email or password");
+      });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
