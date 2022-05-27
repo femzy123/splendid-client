@@ -1,6 +1,7 @@
 import Head from "next/head";
 import withAuth from "../hoc/withAuth";
 import DashboardLayout from "../components/Layout";
+import CustomerShipments from "../components/CustomerShipments";
 
 function Shipments() {
   return (
@@ -13,7 +14,7 @@ function Shipments() {
 
       <main>
         <DashboardLayout>
-          Hello
+          <CustomerShipments />
         </DashboardLayout>
       </main>
     </div>
