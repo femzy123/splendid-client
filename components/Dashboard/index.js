@@ -97,7 +97,7 @@ const Dashboard = () => {
           {warehouses && <Warehouse warehouses={warehouses} />}
         </Col>
         <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-          <Refer />
+          {user && <Refer client_name={user.displayName} />}
         </Col>
       </Row>
 

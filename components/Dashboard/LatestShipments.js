@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Table, Space, Button, Modal } from 'antd';
 
 const { Column } = Table;
@@ -33,6 +33,7 @@ const paymentStatusColor = (status) => {
 
 const LatestShipments = ({shipments}) => {
   const pendingShipments = shipments.filter(shipment => shipment.status !== 'Delivered');
+  const [showModal, setShowModal] = useState(false);
   console.log(pendingShipments);
 
   return (
@@ -40,7 +41,7 @@ const LatestShipments = ({shipments}) => {
       <h3 className="font-bold text-xl mt-2 mb-4 text-purple-600">
         Pending Shipments
       </h3>
-      <div className='w-full overflow-x-auto'>
+      <div className="w-full overflow-x-auto">
         <Table dataSource={pendingShipments} size="small" pagination={false}>
           <Column
             title="Shipping ID"
@@ -73,7 +74,7 @@ const LatestShipments = ({shipments}) => {
             key="consigneeAddress"
           />
           <Column
-            title="Amount Paid"
+            title="Amount"
             key="charge"
             render={(record) => (
               <Space size="small">
@@ -81,7 +82,7 @@ const LatestShipments = ({shipments}) => {
                   <span className="font-semibold text-[10px]">
                     {record.currency}
                   </span>{" "}
-                  {record.charge}
+                  {record.totalCharge}
                 </p>
               </Space>
             )}
@@ -96,7 +97,12 @@ const LatestShipments = ({shipments}) => {
                     Paid
                   </p>
                 ) : (
-                  <Button type="primary" danger className="rounded-full">
+                  <Button
+                    type="primary"
+                    danger
+                    className="rounded-full"
+                    onClick={() => setShowModal(true)}
+                  >
                     Pay Now
                   </Button>
                 )}
@@ -105,6 +111,15 @@ const LatestShipments = ({shipments}) => {
           />
         </Table>
       </div>
+      <Modal
+        // title="Basic Modal"
+        visible={showModal}
+        footer={null}
+        // onOk={handleOk}
+        onCancel={() => setShowModal(false)}
+      >
+        Pay to this account
+      </Modal>
     </div>
   );
 }
