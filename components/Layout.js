@@ -53,7 +53,7 @@ const DashboardLayout = ({ children }) => {
     <Menu
       items={[
         {
-          label: <p className="text-red-500 text-xs">You have {shipments && shipments.length} shipments!</p>,
+          label: <p className="text-red-500 text-xs">You have {shipments && shipments.length} unpaid shipments!</p>,
           key: "0",
         },
       ]}
