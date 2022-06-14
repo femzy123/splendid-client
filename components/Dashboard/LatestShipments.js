@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Table, Space, Button, Modal } from 'antd';
+import { Table, Space, Button, Modal, Row, Col } from 'antd';
 
 const { Column } = Table;
 
@@ -118,7 +118,26 @@ const LatestShipments = ({shipments}) => {
         // onOk={handleOk}
         onCancel={() => setShowModal(false)}
       >
-        Pay to this account
+        <h3 className="text-2xl font-semibold text-center mb-4">
+          Please kindly pay to any of these accounts below
+        </h3>
+        <Row gutter={16}>
+          <Col span={12}>
+            <p className="text-lg font-semibold text-purple-700">Zelle</p>
+            <p className="text-sm font-semibold text-brown-600">
+              info@splendidpackaging.com
+            </p>
+          </Col>
+          <Col span={12}>
+            <p className="text-lg font-semibold text-purple-700">Zenith Bank</p>
+            <p className="text-sm font-semibold text-brown-600">
+              Acc Number: 1213025970
+            </p>
+            <p className="text-sm font-semibold text-brown-600">
+              Acc Name: Splendid packaging logistics
+            </p>
+          </Col>
+        </Row>
       </Modal>
     </div>
   );
