@@ -30,7 +30,7 @@ const Customer = () => {
       const q = query(colRef, where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
       setCustomer(
-        querySnapshot.docs.map((doc) => ({ name: user.displayName, email: user.email, phone: user.phoneNumber, ...doc.data() }))
+        querySnapshot.docs.map((doc) => ({ name: user.displayName, email: user.email, ...doc.data() }))
       );
       console.log(
         querySnapshot.docs.map((doc) => ({
@@ -81,12 +81,20 @@ const Customer = () => {
             <div className="text-brown-600">{customer[0].email}</div>
           </div>
           <div className="flex items-center justify-start space-x-6 mb-4">
+            <div className="text-white bg-purple-600 px-1 text-sm">Phone</div>
+            <div className="text-brown-600">{customer[0].phone}</div>
+          </div>
+          <div className="flex items-center justify-start space-x-6 mb-4">
             <div className="text-white bg-purple-600 px-1 text-sm">Address</div>
             <div className="text-brown-600">{customer[0].address}</div>
           </div>
           <div className="flex items-center justify-start space-x-6 mb-4">
-            <div className="text-white bg-purple-600 px-1 text-sm">Phone</div>
-            <div className="text-brown-600">{customer[0].phone}</div>
+            <div className="text-white bg-purple-600 px-1 text-sm">State</div>
+            <div className="text-brown-600">{customer[0].state}</div>
+          </div>
+          <div className="flex items-center justify-start space-x-6 mb-4">
+            <div className="text-white bg-purple-600 px-1 text-sm">Country</div>
+            <div className="text-brown-600">{customer[0].country}</div>
           </div>
           <div className="flex items-center justify-end my-6">
             <Button

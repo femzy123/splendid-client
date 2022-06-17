@@ -17,6 +17,8 @@ import axios from "axios";
 const { Item } = Form;
 const { TextArea } = Input;
 
+const uniqueId = "spl" + Math.round(Math.random() * 1000) + "c";
+
 const SignUp = () => {
   const auth = getAuth();
   const router = useRouter();
@@ -25,6 +27,8 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [phone, setPhone] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
   const [idUrl, setIdUrl] = useState("");
   const [address, setAddress] = useState("");
 
@@ -35,7 +39,10 @@ const SignUp = () => {
         email === "" ||
         phone === "" ||
         password === "" ||
-        address === ""
+        address === "" ||
+        state === "" ||
+        country === "" ||
+        idUrl === ""
       ) {
         message.error("Please fill all the fields");
       } else {
@@ -43,7 +50,6 @@ const SignUp = () => {
           .post("/api/createUser", {
             name,
             email,
-            phone,
             password,
           })
           .then(async (res) => {
@@ -53,16 +59,21 @@ const SignUp = () => {
               });
               await addDoc(collection(db, "customers"), {
                 userId: res.data.uid,
+                uniqueId,
+                phone,
                 address,
+                state,
+                country,
                 idUrl,
               });
-              sendEmailVerification(auth.currentUser);
               setName("");
               setEmail("");
               setPhone("");
               setPassword("");
               setIdUrl("");
               setAddress("");
+              setState("");
+              setCountry("");
               message.success("Account created successfully");
               router.push("/welcome");
             }
@@ -77,7 +88,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-between">
+    <div className="w-screen flex items-center justify-between">
       <div className="hidden w-[50%] h-full p-10 lg:flex item-center justify-center">
         <Image
           className="w-full h-full mt-4"
@@ -96,6 +107,13 @@ const SignUp = () => {
           onFinish={handleRegister}
           className="w-[100%] lg:w-[60%]"
         >
+          <Item
+            // label="Full Name"
+            // name="name"
+            rules={[{ required: true, message: "Please upload an ID!" }]}
+          >
+            <UploadId setIdUrl={setIdUrl} />
+          </Item>
           <Item
             label="Full Name"
             name="name"
@@ -156,19 +174,30 @@ const SignUp = () => {
             />
           </Item>
 
-          <div className="mb-4">
-            <UploadId setIdUrl={setIdUrl} />
-          </div>
+          <Item
+            label="State"
+            name="state"
+            rules={[{ required: true, message: "Please enter your state!" }]}
+          >
+            <Input value={state} onChange={(e) => setState(e.target.value)} />
+          </Item>
 
-          
-            <Button
-              className="bg-purple-600 text-white my-2"
-              // type="primary"
-              htmlType="submit"
-              block
-            >
-              Register
-            </Button>
+          <Item
+            label="Country"
+            name="country"
+            rules={[{ required: true, message: "Please enter your country!" }]}
+          >
+            <Input value={country} onChange={(e) => setCountry(e.target.value)} />
+          </Item>
+
+          <Button
+            className="bg-purple-600 text-white my-2"
+            // type="primary"
+            htmlType="submit"
+            block
+          >
+            Register
+          </Button>
         </Form>
         <p className="text-center font-semibold">
           Already have an account?{" "}

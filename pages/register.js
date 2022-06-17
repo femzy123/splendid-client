@@ -19,22 +19,26 @@ export default function Register() {
   });
 
   return (
-    <div className="relative h-screen w-screen">
+    <div className="w-screen">
       <Head>
         <title>Sign Up | Splendid Packaging</title>
       </Head>
 
-      <div className="absolute top-5 left-11 z-10">
-        <Image
-          src="https://res.cloudinary.com/femzy123/image/upload/v1645026327/splendid/logo.png"
-          width={59.53}
-          height={57.94}
-          preview={false}
-          alt="logo"
-        />
+      <div className="relative">
+        <div className="absolute top-5 left-11 z-10">
+          <Image
+            src="https://res.cloudinary.com/femzy123/image/upload/v1645026327/splendid/logo.png"
+            width={59.53}
+            height={57.94}
+            preview={false}
+            alt="logo"
+          />
+        </div>
       </div>
 
-      <SignUp />
+      <div>
+        <SignUp />
+      </div>
     </div>
   );
 }
