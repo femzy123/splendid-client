@@ -9,7 +9,6 @@ const Warehouse = ({warehouses}) => {
   const [warehouse, setVWarehouse] = useState(warehouses[0].id);
 
   const handleChange = (value) => {
-    console.log(value)
     setVWarehouse(value)
     setSelectedWarehouse(
       warehouses.filter((warehouse) => warehouse.id === value)[0]

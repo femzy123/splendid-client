@@ -11,7 +11,6 @@ import {
 const UploadId = ({ setIdUrl }) => {
 
   const onUpload = async (file) => {
-    console.log(file);
     const storageRef = ref(storage, file.name);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(

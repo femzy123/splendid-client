@@ -31,9 +31,6 @@ const DashboardLayout = ({ children }) => {
       setShipments(
         querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
       );
-      console.log(
-        querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
     }
   };
 

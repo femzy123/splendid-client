@@ -34,7 +34,6 @@ const paymentStatusColor = (status) => {
 const LatestShipments = ({shipments}) => {
   const pendingShipments = shipments.filter(shipment => shipment.status !== 'Delivered');
   const [showModal, setShowModal] = useState(false);
-  console.log(pendingShipments);
 
   return (
     <div className="my-6">
