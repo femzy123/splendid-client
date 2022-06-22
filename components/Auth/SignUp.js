@@ -13,6 +13,7 @@ import { db } from "../../config/firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 import UploadId from "./UploadId";
 import axios from "axios";
+import emailjs from "@emailjs/browser";
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -75,6 +76,8 @@ const SignUp = () => {
               setState("");
               setCountry("");
               message.success("Account created successfully");
+              sendWelcomeEmail();
+              sendNotificationEmail();
               router.push("/welcome");
             }
           })
@@ -84,6 +87,55 @@ const SignUp = () => {
       }
     } else {
       message.error("Passwords do not match");
+    }
+  };
+
+  const sendWelcomeEmail = () => {
+    const template_params = {
+      client_name: name,
+      client_email: email,
+    };
+
+    try {
+      emailjs
+        .send(
+          "service_7v3uent",
+          "template_e1f830t",
+          template_params,
+          process.env.NEXT_PUBLIC_FIREBASE_EMAILJS_PUBLIC_KEY
+        )
+        .then((result) => {
+          console.log(result);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendNotificationEmail = () => {
+    const template_params = {
+      name,
+      email,
+      phone,
+      address,
+      state,
+      country,
+      idImage: idUrl
+    };
+
+    try {
+      emailjs
+        .send(
+          "service_7v3uent",
+          "template_b36laf4",
+          template_params,
+          process.env.NEXT_PUBLIC_FIREBASE_EMAILJS_PUBLIC_KEY
+        )
+        .then((result) => {
+          console.log(result);
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 
