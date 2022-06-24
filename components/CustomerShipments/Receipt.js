@@ -114,6 +114,7 @@ const Receipt = ({ shipment, componentReceipt }) => {
         <Column title="Height" dataIndex="height" key="height" />
         <Column title="Volume" dataIndex="volume" key="volume" />
         <Column title="Weight" dataIndex="weight" key="weight" />
+        <Column title="Quantity" dataIndex="quantity" key="quantity" />
         <Column title="Price" dataIndex="charge" key="charge" />
       </Table>
     </div>
