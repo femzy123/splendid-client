@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Form, Input, Button, message, Image } from "antd";
@@ -32,6 +32,24 @@ const SignUp = () => {
   const [country, setCountry] = useState("");
   const [idUrl, setIdUrl] = useState("");
   const [address, setAddress] = useState("");
+  const [disableRegister, setDisableRegister] = useState(true)
+
+useEffect(() => {
+  if (
+    name !== "" &&
+    email !== "" &&
+    phone !== "" &&
+    password !== "" &&
+    address !== "" &&
+    state !== "" &&
+    country !== "" &&
+    idUrl !== ""
+  ) {
+    setDisableRegister(false);
+  } else {
+    setDisableRegister(true)
+  }
+}, [name, email, password, confirm, phone, state, country, idUrl, address])
 
   const handleRegister = async () => {
     if (confirm === password) {
@@ -150,10 +168,14 @@ const SignUp = () => {
         />
       </div>
       <div className="w-full lg:w-[50%] h-full flex flex-col items-center justify-center bg-[#F6F4F0] p-6">
-        <h2 className="font-semibold text-2xl mt-6 mb-8 text-center">
-          Register
-        </h2>
-
+        <div className="mt-6 mb-8 text-center">
+          <h2 className="font-semibold text-2xl">
+            Register
+          </h2>
+          <p className="text-red-600 text-xs">
+            Please ensure to upload your ID and fill up all the fields
+          </p>
+        </div>
         <Form
           layout="vertical"
           onFinish={handleRegister}
@@ -239,7 +261,10 @@ const SignUp = () => {
             name="country"
             rules={[{ required: true, message: "Please enter your country!" }]}
           >
-            <Input value={country} onChange={(e) => setCountry(e.target.value)} />
+            <Input
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
           </Item>
 
           <Button
@@ -247,6 +272,7 @@ const SignUp = () => {
             // type="primary"
             htmlType="submit"
             block
+            disabled={disableRegister}
           >
             Register
           </Button>
