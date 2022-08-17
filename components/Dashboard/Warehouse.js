@@ -37,6 +37,14 @@ const Warehouse = ({warehouses}) => {
       />
       {selectedWarehouse && (
         <div className="bg-purple-50 p-4">
+          {selectedWarehouse.name.toLowerCase() === "houston" ? (
+            <Alert
+              className="my-2 text-xs"
+              message="Note that Houston warehouse is strictly for drop-off, and should not be used when shopping online."
+              type="warning"
+              showIcon
+            />
+          ) : null}
           <div className="flex items-center justify-between mb-2">
             <div className="w-full">
               <p className="w-max font-semibold rounded bg-purple-600 text-white px-2 py-[2px]">
