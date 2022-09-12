@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Upload, Button, Space, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
 import { storage } from "../../config/firebase-config";
 import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+
+const { Dragger } = Upload;
 
 const UploadId = ({ setIdUrl }) => {
 
@@ -44,18 +46,32 @@ const UploadId = ({ setIdUrl }) => {
     if (!isLt2M) {
       message.error("Image must smaller than 1MB!");
     }
-    return isJpgOrPng && isLt2M;
+    // return isJpgOrPng && isLt2M;
+    return isJpgOrPng;
   }
 
   return (
-    <Upload
+    // <Upload
+    //   action={(file) => onUpload(file)}
+    //   listType="picture"
+    //   maxCount={1}
+    //   beforeUpload={beforeUpload}
+    // >
+    //   <Button icon={<UploadOutlined />}>Upload Valid ID card</Button>
+    // </Upload>
+    <Dragger
       action={(file) => onUpload(file)}
       listType="picture"
       maxCount={1}
       beforeUpload={beforeUpload}
     >
-      <Button icon={<UploadOutlined />}>Upload Valid ID card</Button>
-    </Upload>
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined />
+      </p>
+      <p className="ant-upload-text">
+        Click or drag file to this area to upload
+      </p>
+    </Dragger>
   );
 };
 

@@ -30,26 +30,27 @@ const SignUp = () => {
   const [phone, setPhone] = useState("");
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
-  const [idUrl, setIdUrl] = useState("");
+  const [idUrl, setIdUrl] = useState(null);
   const [address, setAddress] = useState("");
-  const [disableRegister, setDisableRegister] = useState(true)
+  const [disableRegister, setDisableRegister] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
-useEffect(() => {
-  if (
-    name !== "" &&
-    email !== "" &&
-    phone !== "" &&
-    password !== "" &&
-    address !== "" &&
-    state !== "" &&
-    country !== "" &&
-    idUrl !== ""
-  ) {
-    setDisableRegister(false);
-  } else {
-    setDisableRegister(true)
-  }
-}, [name, email, password, confirm, phone, state, country, idUrl, address])
+  useEffect(() => {
+    if (
+      name !== "" &&
+      email !== "" &&
+      phone !== "" &&
+      password !== "" &&
+      address !== "" &&
+      state !== "" &&
+      country !== "" &&
+      idUrl !== null
+    ) {
+      setDisableRegister(false);
+    } else {
+      setDisableRegister(true);
+    }
+  }, [name, email, password, confirm, phone, state, country, idUrl, address]);
 
   const handleRegister = async () => {
     if (confirm === password) {
@@ -138,7 +139,7 @@ useEffect(() => {
       address,
       state,
       country,
-      idImage: idUrl
+      idImage: idUrl,
     };
 
     try {
@@ -167,11 +168,9 @@ useEffect(() => {
           alt="warehouse"
         />
       </div>
-      <div className="w-full lg:w-[50%] h-full flex flex-col items-center justify-center bg-[#F6F4F0] p-6">
+      <div className="w-full lg:w-[50%] flex flex-col items-center justify-center bg-[#F6F4F0] p-6">
         <div className="mt-6 mb-8 text-center">
-          <h2 className="font-semibold text-2xl">
-            Register
-          </h2>
+          <h2 className="font-semibold text-2xl">Register</h2>
           <p className="text-red-600 text-xs">
             Please ensure to upload your ID and fill up all the fields
           </p>
@@ -179,103 +178,154 @@ useEffect(() => {
         <Form
           layout="vertical"
           onFinish={handleRegister}
-          className="w-[100%] lg:w-[60%]"
+          className="w-[100%] lg:w-[60%] min-h-screen"
         >
-          <Item
-            // label="Full Name"
-            // name="name"
-            rules={[{ required: true, message: "Please upload an ID!" }]}
-          >
-            <UploadId setIdUrl={setIdUrl} />
-          </Item>
-          <Item
-            label="Full Name"
-            name="name"
-            rules={[{ required: true, message: "Please enter your fullname!" }]}
-          >
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </Item>
+          {showForm ? (
+            <>
+              <Item
+                label="Full Name"
+                name="name"
+                rules={[
+                  { required: true, message: "Please enter your fullname!" },
+                ]}
+              >
+                <Input value={name} onChange={(e) => setName(e.target.value)} />
+              </Item>
 
-          <Item
-            label="Email"
-            name="email"
-            rules={[{ required: true, message: "Please enter your email!" }]}
-          >
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-          </Item>
+              <Item
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: "Please enter your email!" },
+                ]}
+              >
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Item>
 
-          <Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Please enter your password!" }]}
-          >
-            <Input.Password
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Item>
+              <Item
+                label="Password"
+                name="password"
+                rules={[
+                  { required: true, message: "Please enter your password!" },
+                ]}
+              >
+                <Input.Password
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Item>
 
-          <Item
-            label="Confirm Password"
-            name="confirm password"
-            rules={[{ required: true, message: "Please confirm password!" }]}
-          >
-            <Input.Password
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
-          </Item>
+              <Item
+                label="Confirm Password"
+                name="confirm password"
+                rules={[
+                  { required: true, message: "Please confirm password!" },
+                ]}
+              >
+                <Input.Password
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                />
+              </Item>
 
-          <Item
-            label="Phone"
-            name="phone"
-            rules={[
-              { required: true, message: "Please enter your phone number!" },
-            ]}
-          >
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-          </Item>
+              <Item
+                label="Phone"
+                name="phone"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your phone number!",
+                  },
+                ]}
+              >
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </Item>
 
-          <Item
-            label="Address"
-            name="address"
-            rules={[{ required: true, message: "Please enter your address!" }]}
-          >
-            <TextArea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-            />
-          </Item>
+              <Item
+                label="Address"
+                name="address"
+                rules={[
+                  { required: true, message: "Please enter your address!" },
+                ]}
+              >
+                <TextArea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                />
+              </Item>
 
-          <Item
-            label="State"
-            name="state"
-            rules={[{ required: true, message: "Please enter your state!" }]}
-          >
-            <Input value={state} onChange={(e) => setState(e.target.value)} />
-          </Item>
+              <Item
+                label="State"
+                name="state"
+                rules={[
+                  { required: true, message: "Please enter your state!" },
+                ]}
+              >
+                <Input
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                />
+              </Item>
 
-          <Item
-            label="Country"
-            name="country"
-            rules={[{ required: true, message: "Please enter your country!" }]}
-          >
-            <Input
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
-          </Item>
+              <Item
+                label="Country"
+                name="country"
+                rules={[
+                  { required: true, message: "Please enter your country!" },
+                ]}
+              >
+                <Input
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                />
+              </Item>
+            </>
+          ) : (
+            <Item
+              // label="Full Name"
+              // name="name"
+              rules={[{ required: true, message: "Please upload an ID!" }]}
+            >
+              <UploadId setIdUrl={setIdUrl} />
+            </Item>
+          )}
 
-          <Button
-            className="bg-purple-600 text-white my-2"
-            // type="primary"
-            htmlType="submit"
-            block
-            disabled={disableRegister}
-          >
-            Register
-          </Button>
+          {showForm ? (
+            <Button
+              className="bg-purple-600 text-white my-2"
+              // type="primary"
+              htmlType="submit"
+              block
+              disabled={disableRegister}
+            >
+              Register
+            </Button>
+          ) : (
+            <Button
+              className="bg-purple-600 text-white my-2"
+              // type="primary"
+              block
+              disabled={idUrl === null}
+              onClick={() => {
+                if (idUrl !== null) {
+                  setShowForm(true);
+                } else {
+                  message.error(
+                    "Something went wrong! Please update your ID again."
+                  );
+                }
+              }}
+            >
+              Next
+            </Button>
+          )}
         </Form>
         <p className="text-center font-semibold">
           Already have an account?{" "}
