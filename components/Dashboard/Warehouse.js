@@ -32,7 +32,7 @@ const Warehouse = ({warehouses}) => {
       </Select>
       <Alert
         className="my-2 text-xs"
-        message="Please use the exact address below for shopping, so we can easily identify your package. It will be deliverd to our warehouse in Lagos, Nigeria"
+        message="Please use your name and the exact address below for shopping, so we can easily identify your package. It will be delivered to our warehouse in Lagos, Nigeria"
         type="info"
       />
       {selectedWarehouse && (
@@ -45,14 +45,14 @@ const Warehouse = ({warehouses}) => {
               showIcon
             />
           ) : null}
-          <div className="flex items-center justify-between mb-2">
+          {/* <div className="flex items-center justify-between mb-2">
             <div className="w-full">
               <p className="w-max font-semibold rounded bg-purple-600 text-white px-2 py-[2px]">
                 Name
               </p>
             </div>
             <div className="w-full">{selectedWarehouse.name}</div>
-          </div>
+          </div> */}
           <div className="flex items-center justify-between mb-2">
             <div className="w-full">
               <p className="w-max font-semibold rounded bg-purple-600 text-white px-2 py-[2px]">
