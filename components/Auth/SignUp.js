@@ -190,8 +190,8 @@ const SignUp = () => {
       await addCustomerDocument(uid);
       resetInputs();
       message.success("Account created successfully");
-      // sendWelcomeEmail();
-      // sendNotificationEmail();
+      sendWelcomeEmail();
+      sendNotificationEmail();
       router.push("/welcome");
     } catch (err) {
       message.error(err.message);
