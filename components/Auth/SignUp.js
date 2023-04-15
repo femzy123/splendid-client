@@ -73,7 +73,7 @@ const SignUp = () => {
             password,
           })
           .then(async (res) => {
-            if (res.status === 200) {
+            if (res.status === 200 && res.data.uid) {
               const roledUser = await axios.post("/api/addCustomerUserRole", {
                 uid: res.data.uid,
               });
