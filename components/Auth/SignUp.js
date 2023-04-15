@@ -52,61 +52,84 @@ const SignUp = () => {
     }
   }, [name, email, password, confirm, phone, state, country, idUrl, address]);
 
-  const handleRegister = async () => {
-    if (confirm === password) {
-      if (
-        name === "" ||
-        email === "" ||
-        phone === "" ||
-        password === "" ||
-        address === "" ||
-        state === "" ||
-        country === "" ||
-        idUrl === ""
-      ) {
-        message.error("Please fill all the fields");
-      } else {
-        await axios
-          .post("/api/createUser", {
-            name,
-            email,
-            password,
-          })
-          .then(async (res) => {
-            if (res.status === 200 && res.data.uid) {
-              const roledUser = await axios.post("/api/addCustomerUserRole", {
-                uid: res.data.uid,
-              });
-              await addDoc(collection(db, "customers"), {
-                userId: res.data.uid,
-                uniqueId,
-                phone,
-                address,
-                state,
-                country,
-                idUrl,
-              });
-              setName("");
-              setEmail("");
-              setPhone("");
-              setPassword("");
-              setIdUrl("");
-              setAddress("");
-              setState("");
-              setCountry("");
-              message.success("Account created successfully");
-              sendWelcomeEmail();
-              sendNotificationEmail();
-              router.push("/welcome");
-            }
-          })
-          .catch((err) => {
-            message.error(err.message);
-          });
-      }
-    } else {
+  const validateInputs = () => {
+    if (confirm !== password) {
       message.error("Passwords do not match");
+      throw new Error("Passwords do not match");
     }
+
+    if (
+      name === "" ||
+      email === "" ||
+      phone === "" ||
+      password === "" ||
+      address === "" ||
+      state === "" ||
+      country === "" ||
+      idUrl === ""
+    ) {
+      message.error("Please fill all the fields");
+      throw new Error("Please fill all the fields");
+    }
+  };
+
+  const createUser = async () => {
+    try {
+      const res = await axios.post("/api/createUser", {
+        name,
+        email,
+        password,
+      });
+      if (res.status !== 200) {
+        message.error("Whoops! Failed to create user");
+        throw new Error("Failed to create user");
+      }
+      return res.data.uid;
+    } catch (err) {
+      message.error("Whoops! Failed to create user");
+      throw new Error(err.message);
+    }
+  };
+
+  const addCustomerUserRole = async (uid) => {
+    try {
+      const res = await axios.post("/api/addCustomerUserRole", { uid });
+      if (res.status !== 200) {
+        message.error("Whoops! Failed to create user");
+        throw new Error("Failed to add customer role");
+      }
+    } catch (err) {
+      message.error("Whoops! Failed to create user");
+      throw new Error(err.message);
+    }
+  };
+
+  const addCustomerDocument = async (uid) => {
+    try {
+      await addDoc(collection(db, "customers"), {
+        userId: uid,
+        uniqueId,
+        phone,
+        address,
+        state,
+        country,
+        idUrl,
+      });
+    } catch (err) {
+      message.error("Whoops! Failed to create user");
+      throw new Error(err.message);
+    }
+  };
+
+  const resetInputs = () => {
+    setName("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
+    setIdUrl("");
+    setAddress("");
+    setState("");
+    setCountry("");
   };
 
   const sendWelcomeEmail = () => {
@@ -155,6 +178,23 @@ const SignUp = () => {
         });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleRegister = async () => {
+    validateInputs();
+
+    try {
+      const uid = await createUser();
+      await addCustomerUserRole(uid);
+      await addCustomerDocument(uid);
+      resetInputs();
+      message.success("Account created successfully");
+      // sendWelcomeEmail();
+      // sendNotificationEmail();
+      router.push("/welcome");
+    } catch (err) {
+      message.error(err.message);
     }
   };
 

@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect} from 'react';
-import { Divider, Select, Alert } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Divider, Select, Alert } from "antd";
 
-const {Option} = Select
+const { Option } = Select;
 
-const Warehouse = ({warehouses}) => {
+const Warehouse = ({ warehouses }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(warehouses[0]);
-  const [warehouse, setVWarehouse] = useState(warehouses[0].id);
+  const [warehouse, setWarehouse] = useState(warehouses[0].id);
 
   const handleChange = (value) => {
-    setVWarehouse(value)
+    setWarehouse(value);
     setSelectedWarehouse(
       warehouses.filter((warehouse) => warehouse.id === value)[0]
     );
-  }
-  
+  };
+
   return (
     <div className="mt-4 rounded-[20px] bg-white p-4">
       <h4 className="text-sm font-semibold">Your Shipping Address</h4>
@@ -73,6 +73,6 @@ const Warehouse = ({warehouses}) => {
       )}
     </div>
   );
-}
+};
 
 export default Warehouse;
