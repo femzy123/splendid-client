@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Form, Input, Button, message, Image } from "antd";
+import { Form, Input, Button, message, Image, notification } from "antd";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -193,6 +193,14 @@ const SignUp = () => {
       sendWelcomeEmail();
       sendNotificationEmail();
       router.push("/welcome");
+      notification.info({
+        message: (
+          <span className="text-red-600 text-lg">
+            Please check your email for your account details
+          </span>
+        ),
+        placement: "topRight",
+      });
     } catch (err) {
       message.error(err.message);
     }
