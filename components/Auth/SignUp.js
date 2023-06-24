@@ -81,7 +81,7 @@ const SignUp = () => {
         password,
       });
       if (res.status !== 200) {
-        message.error("Whoops! Failed to create user");
+        message.error("Whoops! Failed to create user\n Please try again later!");
         throw new Error("Failed to create user");
       }
       return res.data.uid;
@@ -186,6 +186,7 @@ const SignUp = () => {
 
     try {
       const uid = await createUser();
+      if (!uid) return
       await addCustomerUserRole(uid);
       await addCustomerDocument(uid);
       resetInputs();
