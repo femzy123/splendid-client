@@ -34,6 +34,7 @@ const SignUp = () => {
   const [address, setAddress] = useState("");
   const [disableRegister, setDisableRegister] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [uid, setUid] = useState(null)
 
   useEffect(() => {
     if (
@@ -53,6 +54,7 @@ const SignUp = () => {
   }, [name, email, password, confirm, phone, state, country, idUrl, address]);
 
   const validateInputs = () => {
+    // console.log("Inputs are validated")
     if (confirm !== password) {
       message.error("Passwords do not match");
       throw new Error("Passwords do not match");
@@ -74,24 +76,48 @@ const SignUp = () => {
   };
 
   const createUser = async () => {
-    try {
-      const res = await axios.post("/api/createUser", {
-        name,
-        email,
-        password,
-      });
-      if (res.status !== 200) {
-        message.error("Whoops! Failed to create user\n Please try again later!");
-        throw new Error("Failed to create user");
+    // console.log("About to createUser")
+    // try {
+    //   const res = await axios.post("/api/createUser", {
+    //     name,
+    //     email,
+    //     password,
+    //   });
+    //   if (res.status !== 200) {
+    //     message.error("Whoops! Failed to create user\n Please try again later!");
+    //     throw new Error("Failed to create user");
+    //   }
+    //   return res.data.uid;
+    // } catch (err) {
+    //   message.error("Whoops! Failed to create user");
+    //   throw new Error(err.message);
+    // }
+
+    await axios.post("/api/createUser", {
+      name,
+      email,
+      password,
+    })
+    .then(async (res) => {
+      // console.log(res.data.uid)
+      const id = res.data.uid
+      if (res.data.success === false) {
+        message.error(res.data.message);
+        throw new Error(res.data.message);
       }
-      return res.data.uid;
-    } catch (err) {
-      message.error("Whoops! Failed to create user");
-      throw new Error(err.message);
-    }
+      await addCustomerUserRole(id);
+      await addCustomerDocument(id);
+      setUid(id)
+    })
+    // .catch(err => {
+    //   console.log("error", err.message)
+    //     message.error("Sorry! Something went wrong");
+    //     throw new Error(err.message);
+    // })
   };
 
   const addCustomerUserRole = async (uid) => {
+    // console.log("customer role being created")
     try {
       const res = await axios.post("/api/addCustomerUserRole", { uid });
       if (res.status !== 200) {
@@ -105,6 +131,7 @@ const SignUp = () => {
   };
 
   const addCustomerDocument = async (uid) => {
+    // console.log("Customer docs being created")
     try {
       await addDoc(collection(db, "customers"), {
         userId: uid,
@@ -182,17 +209,17 @@ const SignUp = () => {
   };
 
   const handleRegister = async () => {
+    console.log("I was triggered")
+    console.log("Image - ",idUrl)
     validateInputs();
 
     try {
-      const uid = await createUser();
+      await createUser();
       if (!uid) return
-      await addCustomerUserRole(uid);
-      await addCustomerDocument(uid);
       resetInputs();
       message.success("Account created successfully");
-      sendWelcomeEmail();
-      sendNotificationEmail();
+      // sendWelcomeEmail();
+      // sendNotificationEmail();
       router.push("/welcome");
       notification.info({
         message: (
@@ -203,7 +230,8 @@ const SignUp = () => {
         placement: "topRight",
       });
     } catch (err) {
-      message.error(err.message);
+      // message.error(err.message);
+      console.log(err)
     }
   };
 
