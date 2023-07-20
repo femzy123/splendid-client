@@ -209,17 +209,16 @@ const SignUp = () => {
   };
 
   const handleRegister = async () => {
-    console.log("I was triggered")
-    console.log("Image - ",idUrl)
+    console.log(uid)
     validateInputs();
 
     try {
       await createUser();
-      if (!uid) return
+      // if (!uid) return
       resetInputs();
       message.success("Account created successfully");
-      // sendWelcomeEmail();
-      // sendNotificationEmail();
+      sendWelcomeEmail();
+      sendNotificationEmail();
       router.push("/welcome");
       notification.info({
         message: (

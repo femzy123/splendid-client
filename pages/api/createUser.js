@@ -2,7 +2,6 @@ import { auth } from "../../config/firebase-admin";
 
 export default async function handler(req, res) {
   const { name, email, phone, password } = req.body;
-  console.log("Body", req.body)
   try {
     const user = await auth.createUser({
       displayName: name,
