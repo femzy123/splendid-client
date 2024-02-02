@@ -13,7 +13,7 @@ const { Dragger } = Upload;
 const UploadId = ({ setIdUrl }) => {
 
   const onUpload = async (file) => {
-    // const storageRef = ref(storage, file.name);
+    const storageRef = ref(storage, file.name);
     const uniqueFileName = `${Date.now()}_${file.name}`;
     const uploadTask = uploadBytesResumable(storageRef, uniqueFileName);
     uploadTask.on(
