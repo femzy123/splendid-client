@@ -14,25 +14,33 @@ const UploadId = ({ setIdUrl }) => {
 
   const onUpload = async (file) => {
     const storageRef = ref(storage, file.name);
-    const uniqueFileName = `${Date.now()}_${file.name}`;
-    const uploadTask = uploadBytesResumable(storageRef, uniqueFileName);
-    uploadTask.on(
-      "state_changed",
-      (snap) => {
-        let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
-        percentage === 100
-          ? message.success("ID successfully uploaded")
-          : message.loading("ID upload in progress");
-      },
-      (err) => {
-        message.error(err);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setIdUrl(downloadURL);
-        });
-      }
-    );
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snap) => {
+          let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
+          percentage === 100
+            ? message.success("ID successfully uploaded")
+            : message.loading("ID upload in progress");
+        },
+        (error) => {
+          message.error(err);
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              setIdUrl(downloadURL)
+              resolve(downloadURL);
+            })
+            .catch((error) => {
+              console.error(error);
+              reject(error);
+            });
+        }
+      );
+    })
   };
 
   function beforeUpload(file) {
