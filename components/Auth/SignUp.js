@@ -30,7 +30,7 @@ const SignUp = () => {
   const [phone, setPhone] = useState("");
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
-  const [idUrl, setIdUrl] = useState(null);
+  const [idUrl, setIdUrl] = useState("ygygygygyulgyuig");
   const [address, setAddress] = useState("");
   const [disableRegister, setDisableRegister] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -53,11 +53,30 @@ const SignUp = () => {
     }
   }, [name, email, password, confirm, phone, state, country, idUrl, address]);
 
+  function isValidPhoneNumber(phoneNumber) {
+    // Regular expression for phone number format (can be adjusted for specific needs)
+    const phoneRegExp = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+
+    // Check if the phone number matches the format
+    if (!phoneRegExp.test(phoneNumber)) {
+      return false;
+    }
+
+    // Check minimum and maximum number of digits (adjust as needed)
+    const digits = phoneNumber.replace(/\D/g, ""); // Remove non-digits
+    return digits.length >= 10 && digits.length <= 14;
+  }
+
   const validateInputs = () => {
-    // console.log("Inputs are validated")
+    console.log(phone)
     if (confirm !== password) {
       message.error("Passwords do not match");
-      throw new Error("Passwords do not match");
+      console.error("Passwords do not match");
+    }
+
+    if (!isValidPhoneNumber(phone)) {
+      message.error("Please enter a valid phone number");
+      console.error("Please enter a valid phone number");
     }
 
     if (
@@ -76,22 +95,6 @@ const SignUp = () => {
   };
 
   const createUser = async () => {
-    // console.log("About to createUser")
-    // try {
-    //   const res = await axios.post("/api/createUser", {
-    //     name,
-    //     email,
-    //     password,
-    //   });
-    //   if (res.status !== 200) {
-    //     message.error("Whoops! Failed to create user\n Please try again later!");
-    //     throw new Error("Failed to create user");
-    //   }
-    //   return res.data.uid;
-    // } catch (err) {
-    //   message.error("Whoops! Failed to create user");
-    //   throw new Error(err.message);
-    // }
 
     await axios.post("/api/createUser", {
       name,
@@ -209,7 +212,6 @@ const SignUp = () => {
   };
 
   const handleRegister = async () => {
-    console.log(uid)
     validateInputs();
 
     try {
