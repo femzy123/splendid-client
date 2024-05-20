@@ -30,7 +30,7 @@ const SignUp = () => {
   const [phone, setPhone] = useState("");
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
-  const [idUrl, setIdUrl] = useState("ygygygygyulgyuig");
+  const [idUrl, setIdUrl] = useState("");
   const [address, setAddress] = useState("");
   const [disableRegister, setDisableRegister] = useState(true);
   const [showForm, setShowForm] = useState(false);
