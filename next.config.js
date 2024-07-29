@@ -26,6 +26,9 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    domains: ["splendidpackaging.com"],
+  },
 };
 
 module.exports = nextConfig
