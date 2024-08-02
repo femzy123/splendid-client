@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Header = () => {
   return (
-    <header className="px-6 md:px-36 bg-white flex flex-wrap items-center lg:py-3 py-2">
+    <header className="px-6 sm:px-12 lg:px-36 bg-white flex flex-wrap items-center lg:py-3 py-2">
       <div className="flex-1 flex justify-between items-center logo">
         <a href="https://splendidpackaging.com/">
           <Image

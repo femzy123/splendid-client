@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Input } from "antd";
-import { Select } from "antd";
+import { BulbFilled} from "@ant-design/icons"
 import { states } from "../utils/data";
 
 const ShippingCalculator = () => {
@@ -130,10 +129,24 @@ const ShippingCalculator = () => {
             height={300}
           />
         </div>
+        <div>
+          <h2 className="my-4 text-2xl text-gray-500 font-semibold">
+            Shipping Fee Covers:
+          </h2>
+
+          <ul className=" text-lg text-green-600 space-y-4 max-w-sm">
+            <li>
+              Storage & Shipping: Customs duties, taxes, VAT, and clearing fees.
+            </li>
+            <li>
+              Free pickup (available in Lagos only).
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div className="border rounded-lg shadow-lg p-8 space-y-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="w-full">
             <label className="block text-gray-700">Origin Country</label>
             <select
@@ -214,7 +227,7 @@ const ShippingCalculator = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="w-full">
             <label className="block text-gray-700">Length ({volumetric})</label>
             <input
@@ -272,10 +285,12 @@ const ShippingCalculator = () => {
             Shipping fee: {currency}
             {total}
           </p>
-          <p className="text-gray-700 font-bold">
-            Total to pay: {currency}
-            {total}
-          </p>
+          <h5 className="text-gray-700 text-lg font-bold">
+            Total to pay
+          </h5>
+          <div className="w-1/2 bg-gray-300 p-2 text-xl font-semibold">
+            {currency}{total}
+          </div>
         </div>
       </div>
     </div>

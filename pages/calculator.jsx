@@ -5,13 +5,13 @@ import ShippingCalculator from "../components/ShippingCalculator";
 
 const Calculator = () => {
   return (
-    <div className="h-screen ">
+    <div>
       <Head>
         <title>Shipping Calculator | Splendid Packaging</title>
       </Head>
       <Header />
 
-      <div className="px-6 md:px-36 flex flex-col items-center justify-center">
+      <div className="px-6 sm:px-12 lg:px-36 flex flex-col items-center justify-center">
         <div className="max-w-xl text-center mt-20">
           <h1 className="text-2xl md:text-5xl font-bold">
             Calculate Your Shipping Cost
