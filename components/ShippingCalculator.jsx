@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BulbFilled} from "@ant-design/icons"
 import { states } from "../utils/data";
+import { Alert } from "antd";
 
 const ShippingCalculator = () => {
   const [rate, setRate] = useState(4.5);
@@ -87,6 +88,8 @@ const ShippingCalculator = () => {
           setRate(11.5);
         } else if (freightMode === "air" && batteryOr === "none") {
           setRate(10);
+        } else if (freightMode === "ocean") {
+          setRate(450);
         } else if (freightMode === "ocean" && batteryOr === "none") {
           setRate(450);
         } else if (freightMode === "ocean" && batteryOr === "battery") {
@@ -134,14 +137,45 @@ const ShippingCalculator = () => {
             Shipping Fee Covers:
           </h2>
 
-          <ul className=" text-lg text-green-600 space-y-4 max-w-sm">
+          <ul className=" text-lg text-green-600 space-y-4 max-w-sm mb-6">
             <li>
               Storage & Shipping: Customs duties, taxes, VAT, and clearing fees.
             </li>
-            <li>
-              Free pickup (available in Lagos only).
-            </li>
+            <li>Free pickup (available in Lagos only).</li>
           </ul>
+
+          <Alert
+            message={
+              <div>
+                <p className="text-xs">
+                  Packages that weigh from 1lb/kg - 5lbs/kg are a flat rate
+                </p>
+                <table className="w-full text-gray-400">
+                  <tbody>
+                    <tr className="">
+                      <td className="p-4"></td>
+                      <td className="p-4">Lagos</td>
+                      <td className="p-4">Outside Lagos</td>
+                    </tr>
+                    <tr className="">
+                      <td className="p-4">UK</td>
+                      <td className="p-4">£25</td>
+                      <td className="p-4">£30</td>
+                    </tr>
+                    <tr className="">
+                      <td className="p-4">US</td>
+                      <td className="p-4">$25</td>
+                      <td className="p-4">$30</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p className="font-normal text-red-400 mt-2">
+                  Note that electronics attract extra fees and a handling fee
+                </p>
+              </div>
+            }
+            type="info"
+          />
         </div>
       </div>
 
@@ -285,11 +319,10 @@ const ShippingCalculator = () => {
             Shipping fee: {currency}
             {total}
           </p>
-          <h5 className="text-gray-700 text-lg font-bold">
-            Total to pay
-          </h5>
+          <h5 className="text-gray-700 text-lg font-bold">Total to pay</h5>
           <div className="w-1/2 bg-gray-300 p-2 text-xl font-semibold">
-            {currency}{total}
+            {currency}
+            {total}
           </div>
         </div>
       </div>
