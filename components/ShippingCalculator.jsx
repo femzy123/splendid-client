@@ -60,7 +60,7 @@ const ShippingCalculator = () => {
   useEffect(() => {
     if (originCountry === "US") {
       if(destinationState !== "Lagos") {
-        freightMode === "air" ? setRate(5.5) : setRate(2.5)
+        freightMode === "air" ? setRate(5.5) : setRate(3)
       } else {
         freightMode === "air" ? setRate(4.5) : setRate(2)
       }
