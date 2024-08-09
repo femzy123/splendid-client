@@ -100,9 +100,9 @@ const ShippingCalculator = () => {
       }
     } else if (originCountry === "SK") {
       if (destinationState !== "Lagos") {
-        setRate(17);
+        freightMode === "air" ? setRate(17) : setRate(650);
       } else {
-        setRate(15.5);
+        freightMode === "air" ? setRate(15.5) : setRate(650);
       }
     }
   }, [originCountry,destinationState, freightMode, batteryOr])
@@ -170,7 +170,10 @@ const ShippingCalculator = () => {
                   </tbody>
                 </table>
                 <p className="font-normal text-red-400 mt-2">
-                  Note that electronics attract extra fees and a handling fee
+                  Note that electronics attract extra fees and a handling fee.
+                </p>
+                <p className="font-normal text-red-400 mt-2">
+                  Note that Nigerian customs charge #60,000/cbm for Korea to Lagos.
                 </p>
               </div>
             }
