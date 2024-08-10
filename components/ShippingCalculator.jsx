@@ -100,7 +100,7 @@ const ShippingCalculator = () => {
       }
     } else if (originCountry === "SK") {
       if (destinationState !== "Lagos") {
-        freightMode === "air" ? setRate(17) : setRate(650);
+        freightMode === "air" ? setRate(17) : setRate(700);
       } else {
         freightMode === "air" ? setRate(15.5) : setRate(650);
       }
