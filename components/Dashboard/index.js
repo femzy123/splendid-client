@@ -40,9 +40,15 @@ const Dashboard = () => {
     const colRef = collection(db, "warehouse");
 
     onSnapshot(colRef, (snapshot) => {
-      setWarehouses(
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
+      const warehouses = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      // Reorder so "Irving" is first
+      const reordered = [
+        ...warehouses.filter((w) => w.name === "Irving"),
+        ...warehouses.filter((w) => w.name !== "Irving"),
+      ];
+
+      setWarehouses(reordered);
     });
   };
 
