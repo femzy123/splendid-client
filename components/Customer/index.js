@@ -1,30 +1,26 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Card, Modal, Input, message, Form, Image } from 'antd';
-import React, { useState, useEffect } from 'react';
-import {EditOutlined, LockFilled} from '@ant-design/icons';
-import { useAuth } from '../../contexts/AuthContext';
+import { Button, Card, Modal, Input, message, Form, Image } from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+import { EditOutlined, LockFilled } from "@ant-design/icons";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   collection,
   where,
   query,
   getDocs,
   doc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "../../config/firebase-config";
-import {
-  getAuth,
-  updatePassword,
-} from "firebase/auth";
-import { ref, deleteObject } from "firebase/storage";
+import { db } from "../../config/firebase-config";
+import { getAuth, updatePassword } from "firebase/auth";
 
-const {Item} = Form;
+const { Item } = Form;
 
 const Customer = () => {
   const { user } = useAuth();
   const auth = getAuth();
   const [editMode, setEditMode] = useState(false);
   const [customer, setCustomer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [state, setState] = useState("");
@@ -32,76 +28,79 @@ const Customer = () => {
   const [password, setPassword] = useState("");
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  const deleteImage = () => {
-    // Create a reference to the file to delete
-    const desertRef = ref(
-      storage,
-      "https://firebasestorage.googleapis.com/v0/b/splendid-app.appspot.com/o/test.jpg?alt=media&token=2a480884-b53f-4704-aa44-31cf18760fdb"
-    );
+  const getCustomer = useCallback(async () => {
+    if (!user) {
+      setCustomer(null);
+      setIsLoading(false);
+      return;
+    }
 
-    // Delete the file
-    deleteObject(desertRef)
-      .then(() => {
-        // File deleted successfully
-        console.log("File deleted")
-      })
-      .catch((error) => {
-        // Uh-oh, an error occurred!
-        console.log("An error occured")
-      });
-  }
-
-  const getCustomer = async () => {
-    if(user) {
+    try {
+      setIsLoading(true);
       const colRef = collection(db, "customers");
       const q = query(colRef, where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
-      setCustomer(
-        querySnapshot.docs.map((doc) => ({ id: doc.id, name: user.displayName, email: user.email, ...doc.data() }))
-      );
-      console.log(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: user.displayName,
-          email: user.email,
-          ...doc.data(),
-        }))
-      );
+      const customerRecord = querySnapshot.docs[0];
+
+      if (!customerRecord) {
+        setCustomer(null);
+        return;
+      }
+
+      setCustomer({
+        id: customerRecord.id,
+        name: user.displayName || "",
+        email: user.email || "",
+        ...customerRecord.data(),
+      });
+    } catch (error) {
+      message.error("Unable to load your profile right now");
+      setCustomer(null);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, [user]);
 
   const changePassword = async () => {
-    const user = auth.currentUser;
+    const currentUser = auth.currentUser;
 
-    updatePassword(user, password)
+    updatePassword(currentUser, password)
       .then(() => {
         message.success("Password changed successfully");
         setIsPasswordModalOpen(false);
         setPassword("");
       })
       .catch((error) => {
-        message.error(error.message)
-        console.log(error);
+        message.error(error.message);
       });
-  }
+  };
 
   const edit = () => {
-    setPhone(customer[0].phone)
-    setAddress(customer[0].address);
-    setState(customer[0].state);
-    setCountry(customer[0].country);
-    setEditMode(true)
-  }
+    if (!customer) {
+      return;
+    }
+
+    setPhone(customer.phone || "");
+    setAddress(customer.address || "");
+    setState(customer.state || "");
+    setCountry(customer.country || "");
+    setEditMode(true);
+  };
 
   const onUpdate = async () => {
-    const docRef = doc(db, "customers", customer[0].id);
+    if (!customer) {
+      return;
+    }
+
+    const docRef = doc(db, "customers", customer.id);
 
     await updateDoc(docRef, {
-     phone,
-     address,
-     state,
-     country
+      phone,
+      address,
+      state,
+      country,
     });
+
     setPhone("");
     setAddress("");
     setState("");
@@ -113,11 +112,15 @@ const Customer = () => {
 
   useEffect(() => {
     getCustomer();
-  },[])
+  }, [getCustomer]);
+
+  const renderValue = (value) => value || "-";
 
   return (
-    <div className=" w-full flex items-center justify-center">
-      {customer && (
+    <div className="w-full flex items-center justify-center">
+      {isLoading ? (
+        <p className="text-purple-600">Loading profile...</p>
+      ) : customer ? (
         <div>
           <h1 className="text-2xl text-purple-600">Profile</h1>
           <Card className="rounded my-5 shadow-sm lg:w-max">
@@ -138,13 +141,13 @@ const Customer = () => {
               <div className="w-[80px] text-white font-semibold text-center bg-purple-600 px-1 py-1 text-sm">
                 Name
               </div>
-              <div className="text-brown-600">{customer[0].name}</div>
+              <div className="text-brown-600">{renderValue(customer.name)}</div>
             </div>
             <div className="flex items-center justify-start space-x-6 mb-4">
               <div className="w-[80px] text-white font-semibold text-center bg-purple-600 px-1 py-1 text-sm">
                 Email
               </div>
-              <div className="text-brown-600">{customer[0].email}</div>
+              <div className="text-brown-600">{renderValue(customer.email)}</div>
             </div>
             <div className="flex items-center justify-start space-x-6 mb-4">
               <div className="w-[80px] text-white font-semibold text-center bg-purple-600 px-1 py-1 text-sm">
@@ -157,7 +160,9 @@ const Customer = () => {
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 ) : (
-                  <div className="text-brown-600">{customer[0].phone}</div>
+                  <div className="text-brown-600">
+                    {renderValue(customer.phone)}
+                  </div>
                 )}
               </div>
             </div>
@@ -171,7 +176,9 @@ const Customer = () => {
                   onChange={(e) => setAddress(e.target.value)}
                 />
               ) : (
-                <div className="text-brown-600">{customer[0].address}</div>
+                <div className="text-brown-600">
+                  {renderValue(customer.address)}
+                </div>
               )}
             </div>
             <div className="flex items-center justify-start space-x-6 mb-4">
@@ -184,7 +191,7 @@ const Customer = () => {
                   onChange={(e) => setState(e.target.value)}
                 />
               ) : (
-                <div className="text-brown-600">{customer[0].state}</div>
+                <div className="text-brown-600">{renderValue(customer.state)}</div>
               )}
             </div>
             <div className="flex items-center justify-start space-x-6 mb-4">
@@ -197,7 +204,9 @@ const Customer = () => {
                   onChange={(e) => setCountry(e.target.value)}
                 />
               ) : (
-                <div className="text-brown-600">{customer[0].country}</div>
+                <div className="text-brown-600">
+                  {renderValue(customer.country)}
+                </div>
               )}
             </div>
             <div className="flex items-center justify-start space-x-6 mb-4">
@@ -205,12 +214,11 @@ const Customer = () => {
                 ID
               </div>
               <div className="text-brown-600">
-                <Image
-                  width={300}
-                  preview={false}
-                  src={customer[0].idUrl}
-                  alt="ID"
-                />
+                {customer.idUrl ? (
+                  <Image width={300} preview={false} src={customer.idUrl} alt="ID" />
+                ) : (
+                  <span>-</span>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-end my-6">
@@ -223,6 +231,13 @@ const Customer = () => {
               </Button>
             </div>
           </Card>
+        </div>
+      ) : (
+        <div className="text-center">
+          <h1 className="text-2xl text-purple-600">Profile</h1>
+          <p className="mt-4 text-gray-500">
+            No customer profile record was found for this account.
+          </p>
         </div>
       )}
       <Modal
@@ -259,6 +274,6 @@ const Customer = () => {
       </Modal>
     </div>
   );
-}
+};
 
 export default Customer;

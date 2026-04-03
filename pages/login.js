@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Head from "next/head";
-import { Image, message } from "antd";
+import { Image } from "antd";
 import SignIn from '../components/Auth/SignIn';
 import { app } from "../config/firebase-config";
 import { getAuth } from "firebase/auth";
@@ -10,12 +10,14 @@ const Login = () => {
    const auth = getAuth(app);
 
    useEffect(() => {
-     auth.onAuthStateChanged(function (user) {
+     const unsubscribe = auth.onAuthStateChanged(function (user) {
        if (user) {
          router.push("/");
        }
      });
-   });
+
+     return unsubscribe;
+   }, [auth]);
 
   return (
     <div className="relative h-screen w-screen">

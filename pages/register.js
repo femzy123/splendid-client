@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Head from "next/head";
 import { Image, message } from "antd";
 import SignUp from "../components/Auth/SignUp";
@@ -8,15 +8,19 @@ import router from "next/router";
 
 export default function Register() {
   const auth = getAuth(app);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    auth.onAuthStateChanged(function (user) {
-      if (user) {
+    const unsubscribe = auth.onAuthStateChanged(function (user) {
+      if (user && !hasRedirected.current) {
+        hasRedirected.current = true;
         message.info("Already logged in!!");
         router.push("/");
       }
     });
-  });
+
+    return unsubscribe;
+  }, [auth]);
 
   return (
     <div className="w-screen">

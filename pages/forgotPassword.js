@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import { Image, message, Form, Input, Button } from "antd";
-import SignIn from "../components/Auth/SignIn";
 import { app } from "../config/firebase-config";
 import {
   getAuth,
@@ -14,15 +13,19 @@ const { Item } = Form;
 const ForgotPassword = () => {
   const auth = getAuth(app);
   const [email, setEmail] = useState("");
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    auth.onAuthStateChanged(function (user) {
-      if (user) {
+    const unsubscribe = auth.onAuthStateChanged(function (user) {
+      if (user && !hasRedirected.current) {
+        hasRedirected.current = true;
         message.info("Already logged in!");
         router.push("/");
       }
     });
-  });
+
+    return unsubscribe;
+  }, [auth]);
 
   const sendPasswordReset = () => {
     sendPasswordResetEmail(auth, email)
@@ -31,8 +34,7 @@ const ForgotPassword = () => {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        if(errorCode === "auth/user-not-found") {
+        if (errorCode === "auth/user-not-found") {
           message.error("Email not found in our records!");
         } else {
           message.error("Something went wrong! Please try again later");
