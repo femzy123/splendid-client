@@ -2,13 +2,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Form, Input, Button, message, Image, notification } from "antd";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-  updatePhoneNumber,
-  sendEmailVerification,
-} from "firebase/auth";
 import { db } from "../../config/firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 import UploadId from "./UploadId";
@@ -19,9 +12,9 @@ const { Item } = Form;
 const { TextArea } = Input;
 
 const uniqueId = "spl" + Math.round(Math.random() * 1000) + "c";
+const PHONE_FORMAT_EXAMPLE = "+2348012345678";
 
 const SignUp = () => {
-  const auth = getAuth();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,119 +27,102 @@ const SignUp = () => {
   const [address, setAddress] = useState("");
   const [disableRegister, setDisableRegister] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [uid, setUid] = useState(null)
 
   useEffect(() => {
-    if (
-      name !== "" &&
-      email !== "" &&
-      phone !== "" &&
+    const hasRequiredFields =
+      name.trim() !== "" &&
+      email.trim() !== "" &&
+      phone.trim() !== "" &&
       password !== "" &&
-      address !== "" &&
-      state !== "" &&
-      country !== "" &&
-      idUrl !== null
-    ) {
-      setDisableRegister(false);
-    } else {
-      setDisableRegister(true);
-    }
+      confirm !== "" &&
+      address.trim() !== "" &&
+      state.trim() !== "" &&
+      country.trim() !== "" &&
+      idUrl.trim() !== "";
+
+    setDisableRegister(!hasRequiredFields);
   }, [name, email, password, confirm, phone, state, country, idUrl, address]);
 
+  const normalizePhoneNumber = (phoneNumber) =>
+    phoneNumber.replace(/\s+/g, "").trim();
+
   function isValidPhoneNumber(phoneNumber) {
-    // Regular expression for phone number format (can be adjusted for specific needs)
-    const phoneRegExp = /^\+(?:[0-9] ?){6,14}[0-9]$/;
-
-    // Check if the phone number matches the format
-    if (!phoneRegExp.test(phoneNumber)) {
-      return false;
-    }
-
-    // Check minimum and maximum number of digits (adjust as needed)
-    const digits = phoneNumber.replace(/\D/g, ""); // Remove non-digits
-    return digits.length >= 10 && digits.length <= 14;
+    return /^\+[1-9]\d{9,14}$/.test(normalizePhoneNumber(phoneNumber));
   }
 
+  const throwValidationError = (errorMessage) => {
+    message.error(errorMessage);
+    const error = new Error(errorMessage);
+    error.isUserFacing = true;
+    throw error;
+  };
+
   const validateInputs = () => {
-    console.log(phone)
+    if (idUrl.trim() === "") {
+      throwValidationError("Please upload a valid ID before continuing");
+    }
+
     if (confirm !== password) {
-      message.error("Passwords do not match");
-      console.error("Passwords do not match");
+      throwValidationError("Passwords do not match");
     }
 
     if (!isValidPhoneNumber(phone)) {
-      message.error("Please enter a valid phone number");
-      console.error("Please enter a valid phone number");
+      throwValidationError(
+        `Please enter your phone number in E.164 format, for example ${PHONE_FORMAT_EXAMPLE}`
+      );
     }
 
     if (
-      name === "" ||
-      email === "" ||
-      phone === "" ||
+      name.trim() === "" ||
+      email.trim() === "" ||
+      phone.trim() === "" ||
       password === "" ||
-      address === "" ||
-      state === "" ||
-      country === "" ||
+      address.trim() === "" ||
+      state.trim() === "" ||
+      country.trim() === "" ||
       idUrl === ""
     ) {
-      message.error("Please fill all the fields");
-      throw new Error("Please fill all the fields");
+      throwValidationError("Please fill all the fields");
     }
   };
 
   const createUser = async () => {
-
-    await axios.post("/api/createUser", {
+    const normalizedPhone = normalizePhoneNumber(phone);
+    const res = await axios.post("/api/createUser", {
       name,
       email,
+      phone: normalizedPhone,
       password,
-    })
-    .then(async (res) => {
-      // console.log(res.data.uid)
-      const id = res.data.uid
-      if (res.data.success === false) {
-        message.error(res.data.message);
-        throw new Error(res.data.message);
-      }
-      await addCustomerUserRole(id);
-      await addCustomerDocument(id);
-      setUid(id)
-    })
-    // .catch(err => {
-    //   console.log("error", err.message)
-    //     message.error("Sorry! Something went wrong");
-    //     throw new Error(err.message);
-    // })
+    });
+
+    const id = res.data?.uid;
+    if (!id) {
+      throw new Error("User account was not created");
+    }
+
+    await addCustomerUserRole(id);
+    await addCustomerDocument(id);
   };
 
   const addCustomerUserRole = async (uid) => {
-    // console.log("customer role being created")
-    try {
-      const res = await axios.post("/api/addCustomerUserRole", { uid });
-      if (res.status !== 200) {
-        message.error("Whoops! Failed to create user");
-        throw new Error("Failed to add customer role");
-      }
-    } catch (err) {
-      message.error("Whoops! Failed to create user");
-      throw new Error(err.message);
+    const res = await axios.post("/api/addCustomerUserRole", { uid });
+    if (!res.data?.success) {
+      throw new Error(res.data?.message || "Failed to add customer role");
     }
   };
 
   const addCustomerDocument = async (uid) => {
-    // console.log("Customer docs being created")
     try {
       await addDoc(collection(db, "customers"), {
         userId: uid,
         uniqueId,
-        phone,
+        phone: normalizePhoneNumber(phone),
         address,
         state,
         country,
         idUrl,
       });
     } catch (err) {
-      message.error("Whoops! Failed to create user");
       throw new Error(err.message);
     }
   };
@@ -156,10 +132,12 @@ const SignUp = () => {
     setEmail("");
     setPhone("");
     setPassword("");
+    setConfirm("");
     setIdUrl("");
     setAddress("");
     setState("");
     setCountry("");
+    setShowForm(false);
   };
 
   const sendWelcomeEmail = () => {
@@ -212,11 +190,9 @@ const SignUp = () => {
   };
 
   const handleRegister = async () => {
-    validateInputs();
-
     try {
+      validateInputs();
       await createUser();
-      // if (!uid) return
       resetInputs();
       message.success("Account created successfully");
       sendWelcomeEmail();
@@ -231,8 +207,9 @@ const SignUp = () => {
         placement: "topRight",
       });
     } catch (err) {
-      // message.error(err.message);
-      console.log(err)
+      if (!err.isUserFacing) {
+        message.error(err.message || "Sorry! Something went wrong");
+      }
     }
   };
 
@@ -321,7 +298,10 @@ const SignUp = () => {
               >
                 <Input
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={PHONE_FORMAT_EXAMPLE}
+                  onChange={(e) =>
+                    setPhone(normalizePhoneNumber(e.target.value))
+                  }
                 />
               </Item>
 
@@ -378,7 +358,6 @@ const SignUp = () => {
           {showForm ? (
             <Button
               className="bg-purple-600 text-white my-2"
-              // type="primary"
               htmlType="submit"
               block
               disabled={disableRegister}
@@ -388,11 +367,10 @@ const SignUp = () => {
           ) : (
             <Button
               className="bg-purple-600 text-white my-2"
-              // type="primary"
               block
-              disabled={idUrl === null}
+              disabled={!idUrl}
               onClick={() => {
-                if (idUrl !== null) {
+                if (idUrl) {
                   setShowForm(true);
                 } else {
                   message.error(

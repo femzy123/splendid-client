@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { Upload, Button, Space, message } from "antd";
-import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
+import { Upload, message } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
 import { storage } from "../../config/firebase-config";
 import {
   ref,
@@ -11,36 +10,33 @@ import {
 const { Dragger } = Upload;
 
 const UploadId = ({ setIdUrl }) => {
-
-  const onUpload = async (file) => {
-    const storageRef = ref(storage, file.name);
+  const onUpload = ({ file, onError, onSuccess, onProgress }) => {
+    setIdUrl("");
+    const storageRef = ref(storage, `ids/${Date.now()}-${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
-    new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snap) => {
-          let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
-          percentage === 100
-            ? message.success("ID successfully uploaded")
-            : message.loading("ID upload in progress");
-        },
-        (error) => {
-          message.error(err);
-          reject(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              setIdUrl(downloadURL)
-              resolve(downloadURL);
-            })
-            .catch((error) => {
-              console.error(error);
-              reject(error);
-            });
+
+    uploadTask.on(
+      "state_changed",
+      (snap) => {
+        const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
+        onProgress({ percent });
+      },
+      (error) => {
+        message.error(error.message || "ID upload failed");
+        onError(error);
+      },
+      async () => {
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setIdUrl(downloadURL);
+          message.success("ID successfully uploaded");
+          onSuccess({ url: downloadURL });
+        } catch (error) {
+          message.error(error.message || "Failed to retrieve uploaded ID");
+          onError(error);
         }
-      );
-    })
+      }
+    );
   };
 
   function beforeUpload(file) {
@@ -55,21 +51,14 @@ const UploadId = ({ setIdUrl }) => {
     if (!isLt2M) {
       message.error("Image must smaller than 1MB!");
     }
-    // return isJpgOrPng && isLt2M;
-    return isJpgOrPng;
+
+    return isJpgOrPng && isLt2M;
   }
 
   return (
-    // <Upload
-    //   action={(file) => onUpload(file)}
-    //   listType="picture"
-    //   maxCount={1}
-    //   beforeUpload={beforeUpload}
-    // >
-    //   <Button icon={<UploadOutlined />}>Upload Valid ID card</Button>
-    // </Upload>
     <Dragger
-      action={(file) => onUpload(file)}
+      accept=".jpg,.jpeg,.png"
+      customRequest={onUpload}
       listType="picture"
       maxCount={1}
       beforeUpload={beforeUpload}
