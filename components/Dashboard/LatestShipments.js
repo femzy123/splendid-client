@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { Table, Space, Button, Modal, Row, Col } from 'antd';
 
 const { Column } = Table;
+const safeText = (value, fallback = "-") => value || fallback;
 
 const statusColor = (status) => {
   switch (status) {
@@ -44,7 +45,7 @@ const LatestShipments = ({shipments}) => {
         <Table dataSource={pendingShipments} size="small" pagination={false}>
           <Column
             title="Shipping ID"
-            dataIndex="trackingNumber"
+            render={(record) => safeText(record.trackingNumber)}
             key="trackNumber"
           />
           <Column
@@ -63,13 +64,17 @@ const LatestShipments = ({shipments}) => {
           />
           <Column
             title="Expected Delivery Date"
-            dataIndex="expectedDeliveryDate"
+            render={(record) => safeText(record.expectedDeliveryDate)}
             key="date"
           />
-          <Column title="Receiver" dataIndex="consignee" key="consignee" />
+          <Column
+            title="Receiver"
+            key="consignee"
+            render={(record) => safeText(record.consignee)}
+          />
           <Column
             title="Destination"
-            dataIndex="consigneeAddress"
+            render={(record) => safeText(record.consigneeAddress)}
             key="consigneeAddress"
           />
           <Column
@@ -79,9 +84,9 @@ const LatestShipments = ({shipments}) => {
               <Space size="small">
                 <p className="capitalize">
                   <span className="font-semibold text-[10px]">
-                    {record.currency}
+                    {safeText(record.currency, "")}
                   </span>{" "}
-                  {record.totalCharge}
+                  {safeText(record.totalCharge)}
                 </p>
               </Space>
             )}

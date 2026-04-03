@@ -3,8 +3,11 @@ import { Divider, Image, Table } from "antd";
 import Barcode from "../../utils/react-barcode";
 
 const { Column } = Table;
+const safeText = (value, fallback = "-") => value || fallback;
 
 const Receipt = ({ shipment, componentReceipt }) => {
+  const commodities = shipment.commodities || [];
+
   return (
     <div className="mb-10 p-10" ref={componentReceipt}>
       <div className="flex items-center justify-between">
@@ -20,13 +23,13 @@ const Receipt = ({ shipment, componentReceipt }) => {
 
         <div>
           <h3 className="text-lg font-semibold">Splendid Packaging</h3>
-          <p className="text-sm">{shipment.warehouse.location}</p>
+          <p className="text-sm">{safeText(shipment.warehouse?.location)}</p>
         </div>
 
         <div>
           <h3 className="text-lg font-semibold uppercase">Warehouse receipt</h3>
           <Barcode
-            value={shipment.trackingNumber}
+            value={safeText(shipment.trackingNumber, "N/A")}
             width={1.5}
             height={50}
             fontSize={14}
@@ -38,37 +41,37 @@ const Receipt = ({ shipment, componentReceipt }) => {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-xl font-semibold">Shipping ID</h4>
-            <p className="text-lg">{shipment.id}</p>
+            <p className="text-lg">{safeText(shipment.id)}</p>
           </div>
           <div>
             <h4 className="text-xl font-semibold">Shipper</h4>
-            <p className="text-lg">{shipment.shipper}</p>
+            <p className="text-lg">{safeText(shipment.shipper)}</p>
           </div>
           <div>
             <h4 className="text-xl font-semibold">Received By</h4>
-            <p className="text-lg">{shipment.createdBy.fullName}</p>
+            <p className="text-lg">{safeText(shipment.createdBy?.fullName)}</p>
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-xl font-semibold">Warehouse</h4>
-            <p className="text-lg">{shipment.warehouse.country}</p>
+            <p className="text-lg">{safeText(shipment.warehouse?.country)}</p>
           </div>
           <div>
             <h4 className="text-xl font-semibold">Carrier</h4>
-            <p className="text-lg">{shipment.carrier}</p>
+            <p className="text-lg">{safeText(shipment.carrier)}</p>
           </div>
           <div>
             <h4 className="text-xl font-semibold">Consignee</h4>
-            <p className="text-lg">{shipment.consignee}</p>
+            <p className="text-lg">{safeText(shipment.consignee)}</p>
           </div>
         </div>
       </div>
 
       <Table
         style={{ width: "100%" }}
-        dataSource={shipment.commodities}
+        dataSource={commodities}
         size="small"
         pagination={false}
         summary={() => {
@@ -83,7 +86,7 @@ const Receipt = ({ shipment, componentReceipt }) => {
                 </Table.Summary.Cell>
                 <Table.Summary.Cell>
                   <p className="font-semibold">
-                    {shipment.currency} {shipment.totalCharge}
+                    {safeText(shipment.currency, "")} {safeText(shipment.totalCharge)}
                   </p>
                 </Table.Summary.Cell>
               </Table.Summary.Row>
@@ -96,10 +99,10 @@ const Receipt = ({ shipment, componentReceipt }) => {
                 </Table.Summary.Cell>
                 <Table.Summary.Cell>
                   <p className="font-semibold">
-                    {shipment.currency}{" "}
+                    {safeText(shipment.currency, "")}{" "}
                     {shipment.paymentStatus === "paid"
                       ? "0.00"
-                      : shipment.totalCharge}
+                      : safeText(shipment.totalCharge)}
                   </p>
                 </Table.Summary.Cell>
               </Table.Summary.Row>

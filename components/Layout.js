@@ -22,6 +22,8 @@ const DashboardLayout = ({ children }) => {
   const { user } = useAuth();
   const auth = getAuth();
   const [shipments, setShipments] = useState(null);
+  const displayName = user?.displayName || "User";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
 
   const getShipments = async () => {
     if (user) {
@@ -93,9 +95,9 @@ const DashboardLayout = ({ children }) => {
                 </Dropdown>
               </div>
               {user && (
-                <Tooltip title={user.displayName.toUpperCase()}>
+                <Tooltip title={displayName.toUpperCase()}>
                   <Avatar className="bg-purple-600 text-white font-semibold">
-                    {user.displayName.charAt(0)}
+                    {avatarInitial}
                   </Avatar>
                 </Tooltip>
               )}

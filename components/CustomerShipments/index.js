@@ -20,6 +20,7 @@ const CustomerShipments = () => {
   const { user } = useAuth();
   const [shipments, setShipments] = useState(null);
   const [search, setSearch] = useState("");
+  const normalizedSearch = search.trim().toLowerCase();
 
   const getShipments = async () => {
     if (user) {
@@ -62,15 +63,15 @@ const CustomerShipments = () => {
       {shipments && (
         <ListShipments
           shipments={
-            search
+            normalizedSearch
               ? shipments.filter(
                   (shipment) =>
-                    shipment.shipper
+                    (shipment.shipper || "")
                       .toLowerCase()
-                      .includes(search.toLowerCase()) ||
-                    shipment.trackingNumber
+                      .includes(normalizedSearch) ||
+                    (shipment.trackingNumber || "")
                       .toLowerCase()
-                      .includes(search.toLowerCase())
+                      .includes(normalizedSearch)
                 )
               : shipments
           }

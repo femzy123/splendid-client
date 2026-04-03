@@ -23,6 +23,7 @@ import ReactToPrint, { useReactToPrint } from "react-to-print";
 import Receipt from "./Receipt";
 
 const { Column } = Table;
+const safeText = (value, fallback = "-") => value || fallback;
 
 const statusColor = (status) => {
   switch (status) {
@@ -60,7 +61,7 @@ const ListShipments = ({ shipments }) => {
       <Table dataSource={shipments} size="small" style={{ width: "100%" }}>
         <Column
           title="Shipping ID"
-          dataIndex="trackingNumber"
+          render={(record) => safeText(record.trackingNumber)}
           key="trackNumber"
         />
         <Column
@@ -82,19 +83,25 @@ const ListShipments = ({ shipments }) => {
           key="warehouse"
           render={(record) => (
             <Space size="small">
-              <p className="capitalize">{record.warehouse.country}</p>
+              <p className="capitalize">
+                {safeText(record.warehouse?.country)}
+              </p>
             </Space>
           )}
         />
-        <Column title="Receiver" dataIndex="consignee" key="consignee" />
+        <Column
+          title="Receiver"
+          key="consignee"
+          render={(record) => safeText(record.consignee)}
+        />
         <Column
           title="Destination"
-          dataIndex="consigneeAddress"
+          render={(record) => safeText(record.consigneeAddress)}
           key="consigneeAddress"
         />
         <Column
           title="Expected Delivery Date"
-          dataIndex="expectedDeliveryDate"
+          render={(record) => safeText(record.expectedDeliveryDate)}
           key="date"
         />
         <Column
@@ -104,9 +111,9 @@ const ListShipments = ({ shipments }) => {
             <Space size="small">
               <p className="capitalize">
                 <span className="font-semibold text-[10px]">
-                  {record.currency}
+                  {safeText(record.currency, "")}
                 </span>{" "}
-                {record.charge}
+                {safeText(record.charge)}
               </p>
             </Space>
           )}

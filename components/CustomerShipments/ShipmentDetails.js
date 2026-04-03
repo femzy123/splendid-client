@@ -3,19 +3,22 @@ import React from "react";
 // import Barcode from "react-barcode";
 
 const { Column } = Table;
+const safeText = (value, fallback = "-") => value || fallback;
 
 const ShipmentDetails = ({ shipment }) => {
+  const commodities = shipment.commodities || [];
+
   return (
     <>
       <div>
         <div className="flex items-center justify-between">
           <div>
             <h5 className="text-xl font-semibold">Customer</h5>
-            <p className="text-lg">{shipment.customer.name}</p>
+            <p className="text-lg">{safeText(shipment.customer?.name)}</p>
           </div>
           <div>
             <h5 className="text-xl font-semibold">Status</h5>
-            <p className="text-lg">{shipment.status}</p>
+            <p className="text-lg">{safeText(shipment.status)}</p>
           </div>
           <div>
             {/* <Barcode
@@ -31,7 +34,7 @@ const ShipmentDetails = ({ shipment }) => {
         <div className="flex items-center justify-between">
           <div>
             <h5 className="text-xl font-semibold">Date Received</h5>
-            <p className="text-lg">{shipment.date}</p>
+            <p className="text-lg">{safeText(shipment.date)}</p>
           </div>
           <div>
             <Image
@@ -42,7 +45,7 @@ const ShipmentDetails = ({ shipment }) => {
           </div>
           <div className="text-right">
             <h5 className="text-xl font-semibold">Expected Delivery Date</h5>
-            <p className="text-lg">{shipment.expectedDeliveryDate}</p>
+            <p className="text-lg">{safeText(shipment.expectedDeliveryDate)}</p>
           </div>
         </div>
         <Divider />
@@ -50,15 +53,17 @@ const ShipmentDetails = ({ shipment }) => {
         <div className="flex items-center justify-between">
           <div>
             <h5 className="text-xl font-semibold">Warehouse</h5>
-            <p className="text-lg">{shipment.warehouse.name}</p>
+            <p className="text-lg">{safeText(shipment.warehouse?.name)}</p>
           </div>
           <div>
             <h5 className="text-xl font-semibold">Received By</h5>
-            <p className="text-lg capitalize">{shipment.createdBy.fullName}</p>
+            <p className="text-lg capitalize">
+              {safeText(shipment.createdBy?.fullName)}
+            </p>
           </div>
           <div>
             <h5 className="text-xl font-semibold">Carrier</h5>
-            <p className="text-lg capitalize">{shipment.carrier}</p>
+            <p className="text-lg capitalize">{safeText(shipment.carrier)}</p>
           </div>
         </div>
         <Divider />
@@ -66,18 +71,18 @@ const ShipmentDetails = ({ shipment }) => {
         <div className="flex items-center justify-between space-x-10">
           <div className="w-[40%]">
             <h5 className="text-xl font-semibold">Shipper</h5>
-            <p className="text-[16px]">{shipment.shipper}</p>
+            <p className="text-[16px]">{safeText(shipment.shipper)}</p>
             <p className=" text-sm text-gray-400">
               <span className="font-semibold text-black">Address: </span>
-              {shipment.shipperAddress}
+              {safeText(shipment.shipperAddress)}
             </p>
           </div>
           <div className="w-[40%] text-right">
             <h5 className="text-xl font-semibold">Consignee</h5>
-            <p className="text-[16px]">{shipment.consignee}</p>
+            <p className="text-[16px]">{safeText(shipment.consignee)}</p>
             <p className=" text-sm text-gray-400">
               <span className="font-semibold text-black">Address: </span>
-              {shipment.consigneeAddress}
+              {safeText(shipment.consigneeAddress)}
             </p>
           </div>
         </div>
@@ -87,7 +92,7 @@ const ShipmentDetails = ({ shipment }) => {
           <h5 className="text-xl font-semibold mb-4">Commodities</h5>
           <Table
             style={{ width: "100%" }}
-            dataSource={shipment.commodities}
+            dataSource={commodities}
             size="small"
             pagination={false}
           >
@@ -111,7 +116,7 @@ const ShipmentDetails = ({ shipment }) => {
           <div>
             <h5 className="text-xl font-semibold">Charges</h5>
             <p className="text-sm">
-              {shipment.currency}{" "}
+              {safeText(shipment.currency, "")}{" "}
               <span
                 className={`${
                   shipment.paymentStatus === "paid"
@@ -119,7 +124,7 @@ const ShipmentDetails = ({ shipment }) => {
                     : "text-red-600"
                 } text-lg font-bold`}
               >
-                {shipment.totalCharge}
+                {safeText(shipment.totalCharge)}
               </span>
             </p>
           </div>
@@ -132,7 +137,7 @@ const ShipmentDetails = ({ shipment }) => {
                   : "text-red-600"
               } text-lg font-semibold capitalize`}
             >
-              {shipment.paymentStatus}
+              {safeText(shipment.paymentStatus)}
             </p>
           </div>
         </div>
