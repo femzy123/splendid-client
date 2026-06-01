@@ -23,6 +23,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.log("createUser error", error);
     return res.status(400).json({
+      code: error.code,
       message: error.message,
       success: false,
     });

@@ -13,6 +13,7 @@ const { TextArea } = Input;
 
 const uniqueId = "spl" + Math.round(Math.random() * 1000) + "c";
 const PHONE_FORMAT_EXAMPLE = "+2348012345678";
+const PHONE_FORMAT_ERROR_MESSAGE = `Please enter a valid phone number with the country code, for example ${PHONE_FORMAT_EXAMPLE}.`;
 
 const SignUp = () => {
   const router = useRouter();
@@ -57,6 +58,33 @@ const SignUp = () => {
     throw error;
   };
 
+  const getRegistrationErrorMessage = (error) => {
+    const apiMessage = error.response?.data?.message || "";
+    const apiCode = error.response?.data?.code || "";
+    const errorText = `${apiCode} ${apiMessage} ${error.message || ""}`.toLowerCase();
+
+    if (
+      error.response?.status === 400 &&
+      (errorText.includes("phone") || errorText.includes("e.164"))
+    ) {
+      return PHONE_FORMAT_ERROR_MESSAGE;
+    }
+
+    if (errorText.includes("email-already-exists")) {
+      return "An account already exists for this email address. Please log in or use a different email.";
+    }
+
+    if (errorText.includes("invalid-email")) {
+      return "Please enter a valid email address.";
+    }
+
+    if (errorText.includes("invalid-password")) {
+      return "Please choose a stronger password with at least 6 characters.";
+    }
+
+    return "We could not create your account right now. Please check your details and try again.";
+  };
+
   const validateInputs = () => {
     if (idUrl.trim() === "") {
       throwValidationError("Please upload a valid ID before continuing");
@@ -67,9 +95,7 @@ const SignUp = () => {
     }
 
     if (!isValidPhoneNumber(phone)) {
-      throwValidationError(
-        `Please enter your phone number in E.164 format, for example ${PHONE_FORMAT_EXAMPLE}`
-      );
+      throwValidationError(PHONE_FORMAT_ERROR_MESSAGE);
     }
 
     if (
@@ -208,7 +234,7 @@ const SignUp = () => {
       });
     } catch (err) {
       if (!err.isUserFacing) {
-        message.error(err.message || "Sorry! Something went wrong");
+        message.error(getRegistrationErrorMessage(err));
       }
     }
   };
