@@ -14,6 +14,7 @@ import {
 const { Dragger } = Upload;
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
+const MAX_ID_UPLOAD_SIZE_MB = 5;
 
 const getStoragePath = (fileName) =>
   `export-registrations/${Date.now()}-${sanitizeFileName(fileName)}`;
@@ -25,8 +26,10 @@ const ImageUploadField = ({ uploadState, setUploadState }) => {
       return false;
     }
 
-    if (file.size / 1024 / 1024 > 1) {
-      message.error("The uploaded image must be 1MB or smaller.");
+    if (file.size / 1024 / 1024 > MAX_ID_UPLOAD_SIZE_MB) {
+      message.error(
+        `The uploaded image must be ${MAX_ID_UPLOAD_SIZE_MB}MB or smaller.`
+      );
       return false;
     }
 
@@ -104,7 +107,7 @@ const ImageUploadField = ({ uploadState, setUploadState }) => {
           Click or drag an ID image to upload
         </p>
         <p className="ant-upload-hint">
-          JPG or PNG only, maximum size 1MB.
+          JPG or PNG only, maximum size {MAX_ID_UPLOAD_SIZE_MB}MB.
         </p>
       </Dragger>
 

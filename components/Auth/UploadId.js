@@ -8,6 +8,7 @@ import {
 } from "firebase/storage";
 
 const { Dragger } = Upload;
+const MAX_ID_UPLOAD_SIZE_MB = 5;
 
 const UploadId = ({ setIdUrl }) => {
   const onUpload = ({ file, onError, onSuccess, onProgress }) => {
@@ -47,12 +48,12 @@ const UploadId = ({ setIdUrl }) => {
     if (!isJpgOrPng) {
       message.error("You can only upload JPG/PNG file!");
     }
-    const isLt2M = file.size / 1024 / 1024 < 1;
-    if (!isLt2M) {
-      message.error("Image must smaller than 1MB!");
+    const isWithinSizeLimit = file.size / 1024 / 1024 <= MAX_ID_UPLOAD_SIZE_MB;
+    if (!isWithinSizeLimit) {
+      message.error(`Image must be ${MAX_ID_UPLOAD_SIZE_MB}MB or smaller!`);
     }
 
-    return isJpgOrPng && isLt2M;
+    return isJpgOrPng && isWithinSizeLimit;
   }
 
   return (
